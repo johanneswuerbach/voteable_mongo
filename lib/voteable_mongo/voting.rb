@@ -12,6 +12,7 @@ module Mongo
         #   - :value: :up or :down
         #   - :revote: if true change vote vote from :up to :down and vise versa
         #   - :unvote: if true undo the voting
+        #   - :updated_at: update parents updated_at
         # 
         # @return [votee, false]
         def vote(options)
@@ -25,6 +26,11 @@ module Mongo
               unvote_query_and_update(options)
             else
               new_vote_query_and_update(options)
+            end
+            
+            # Update parent timestamp
+            if options[:updated_at]
+              update['$set'] = {'updated_at' => Time.now}
             end
 
             # http://www.mongodb.org/display/DOCS/findAndModify+Command
